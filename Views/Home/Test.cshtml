@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Test";
+}
+<h3>@ViewBag.Message</h3>
+
+
+<h4>Translate:</h4>
+@using HelloWorldWebApp.Controllers
+@model HelloWorldWebApp.Controllers.DataInput
+
+@using (Html.BeginForm("Result", "Home", FormMethod.Post))
+{
+    @Html.TextBoxFor(m => m.Text)
+    @Html.DropDownListFor(m => m.SelectedCountry, DropdownHelper.GetAllCountries())
+
+    <input type="submit" value="Translate" />
+}
+

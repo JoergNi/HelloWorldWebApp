@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>@ViewBag.Message from Robot PA</h1>
+    <h2>@ViewBag.SubMessage</h2>
+    <p class="lead">I translate stuff.</p>
+</div>
+
+<h4>Localize Address:</h4>
+
+@using HelloWorldWebApp.Controllers
+@model HelloWorldWebApp.Controllers.AddressInput
+
+@using (Html.BeginForm("LocalizeAddress", "Home", FormMethod.Post))
+{
+    @Html.TextBoxFor(m => m.Address)
+
+    <input type="submit" value="Translate" />
+}
+

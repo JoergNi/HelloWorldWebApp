@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<query>
+  <status>success</status>
+  <country><![CDATA[United States]]></country>
+  <countryCode><![CDATA[US]]></countryCode>
+  <region><![CDATA[CA]]></region>
+  <regionName><![CDATA[California]]></regionName>
+  <city><![CDATA[San Francisco]]></city>
+  <zip><![CDATA[94105]]></zip>
+  <lat><![CDATA[37.7898]]></lat>
+  <lon><![CDATA[-122.3942]]></lon>
+  <timezone><![CDATA[America/Los_Angeles]]></timezone>
+  <isp><![CDATA[Wikimedia Foundation]]></isp>
+  <org><![CDATA[Wikimedia Foundation]]></org>
+  <as><![CDATA[AS14907 Wikimedia US network]]></as>
+  <query><![CDATA[208.80.152.201]]></query>
+</query>
