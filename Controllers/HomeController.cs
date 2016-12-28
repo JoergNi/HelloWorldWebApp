@@ -8,10 +8,30 @@ namespace HelloWorldWebApp.Controllers
 {
     public class HomeController : Controller
     {
+
+        private TranslatorAccess TranslatorAccess
+        {
+            get
+            {
+                TranslatorAccess result;
+                HttpContext context = System.Web.HttpContext.Current;
+                if (context.Application.Contents["TranslatorAccess"] != null)
+                {
+                    result = context.Application.Contents["TranslatorAccess"] as TranslatorAccess;
+                }
+                else
+                {
+                    result = new TranslatorAccess();
+                    context.Application.Contents["TranslatorAccess"] = result; 
+                }
+                return result;
+            }
+        }
+
         public ActionResult Index()
         {
             var locationInfo = GetLocationInfo();
-
+           
             ViewBag.Message = "Hello to " + locationInfo.GetCountryName() + "\r\n";
             try
             {
@@ -55,8 +75,15 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult LocalizeAddress(AddressInput addressInput)
         {
-            
-            ViewBag.Message = LocationInfo.GetLocationInfo(addressInput.Address);
+            try
+            {
+                ViewBag.Message = LocationInfo.GetLocationInfo(addressInput.Address, TranslatorAccess);
+            }
+            catch (AddressNotFoundException addressNotFoundException)
+            {
+                ViewBag.Message = addressNotFoundException.Message;
+            }
+          
             return View();
         }
 

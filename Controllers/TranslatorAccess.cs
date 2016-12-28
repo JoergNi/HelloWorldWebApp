@@ -15,16 +15,16 @@ namespace HelloWorldWebApp.Controllers
 {
 
 
-    public static class TranslatorAccess
+    public class TranslatorAccess
     {
-        public static IDictionary<DataInput, string> Translations = new Dictionary<DataInput, string>();
-        public static IDictionary<string, string> CountryCodeToLanguageCode = new Dictionary<string, string>();
+        public  IDictionary<DataInput, string> Translations = new Dictionary<DataInput, string>();
+        public  IDictionary<string, string> CountryCodeToLanguageCode = new Dictionary<string, string>();
 
         private const string SubscriptionKey = "2033bf855ec24c79b47102716f4aa11c";
 
-        private static AzureAuthToken _azureAuthToken;
+        private  AzureAuthToken _azureAuthToken;
 
-        public static AzureAuthToken AzureAuthToken
+        public  AzureAuthToken AzureAuthToken
         {
             get
             {
@@ -37,9 +37,9 @@ namespace HelloWorldWebApp.Controllers
         }
 
 
-        private static IList<string> _languagesForTranslate;
+        private IList<string> _languagesForTranslate;
 
-        public static IList<string> LanguagesForTranslate
+        public IList<string> LanguagesForTranslate
         {
             get
             {
@@ -51,7 +51,7 @@ namespace HelloWorldWebApp.Controllers
             }
         }
 
-        public static string TranslateByCountryCode(string textToTranslate, string countryCode)
+        public string TranslateByCountryCode(string textToTranslate, string countryCode)
         {
             var dataInput = new DataInput()
             {
@@ -75,7 +75,7 @@ namespace HelloWorldWebApp.Controllers
             return result;
         }
 
-        public static string Translate(string textToTranslate, string toLanguageCode)
+        public string Translate(string textToTranslate, string toLanguageCode)
         {
             string result;
             if (!LanguagesForTranslate.Any(x => x.Equals(toLanguageCode, StringComparison.InvariantCultureIgnoreCase)))
@@ -105,7 +105,7 @@ namespace HelloWorldWebApp.Controllers
             return result;
         }
 
-        public static string GetLanguageCode(string countryCode)
+        public string GetLanguageCode(string countryCode)
         {
             string result;
             if (!CountryCodeToLanguageCode.TryGetValue(countryCode, out result))
@@ -137,7 +137,7 @@ namespace HelloWorldWebApp.Controllers
 
 
 
-        private static IList<string> GetLanguagesForTranslate()
+        private IList<string> GetLanguagesForTranslate()
         {
             IList<string> languagesForTranslate;
             string uri = "http://api.microsofttranslator.com/v2/Http.svc/GetLanguagesForTranslate";

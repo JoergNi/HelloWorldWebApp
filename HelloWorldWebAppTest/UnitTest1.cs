@@ -21,18 +21,19 @@ namespace HelloWorldWebAppTest
         [TestMethod]
         public void TestTranslate()
         {
-            string result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "us");
+            var translatorAccess = new TranslatorAccess();
+            string result = translatorAccess.TranslateByCountryCode("Guten Morgen", "us");
             Assert.AreEqual("Good morning", result);
-             result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "gb");
+             result = translatorAccess.TranslateByCountryCode("Guten Morgen", "gb");
             Assert.AreEqual("Good morning", result);
-             result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "au");
+             result = translatorAccess.TranslateByCountryCode("Guten Morgen", "au");
             Assert.AreEqual("Good morning", result);
             Assert.AreEqual("Good morning", result);
-            result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "de");
+            result = translatorAccess.TranslateByCountryCode("Guten Morgen", "de");
             Assert.AreEqual("Guten Morgen", result);
-            result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "co");
+            result = translatorAccess.TranslateByCountryCode("Guten Morgen", "co");
             Assert.AreEqual("Buenos días", result);
-            result = TranslatorAccess.TranslateByCountryCode("Guten Morgen", "hk");
+            result = translatorAccess.TranslateByCountryCode("Guten Morgen", "hk");
             Assert.AreEqual("早上好", result);
            
 
@@ -43,11 +44,12 @@ namespace HelloWorldWebAppTest
         [TestMethod]
         public void TestGetLanguageCode()
         {
-            string result = TranslatorAccess.GetLanguageCode("de");
+            var translatorAccess = new TranslatorAccess();
+            string result = translatorAccess.GetLanguageCode("de");
             Assert.AreEqual("de", result);
-            result = TranslatorAccess.GetLanguageCode("us");
+            result = translatorAccess.GetLanguageCode("us");
             Assert.AreEqual("en", result);
-            result = TranslatorAccess.GetLanguageCode("at");
+            result = translatorAccess.GetLanguageCode("at");
             Assert.AreEqual("de", result);
 
         }
@@ -56,9 +58,19 @@ namespace HelloWorldWebAppTest
         [TestMethod]
         public void TestGetLocationInfo()
         {
-            string result = LocationInfo.GetLocationInfo("HongKong");
-            Assert.AreEqual("bodo", result);
+            var translatorAccess = new TranslatorAccess();
+            string result = LocationInfo.GetLocationInfo("Cologne", translatorAccess);
+            Assert.AreEqual("Köln, NW, Deutschland", result);
 
+            result = LocationInfo.GetLocationInfo("Bonner Str 17, Cologne", translatorAccess);
+            Assert.AreEqual("Bonner Straße 17, 50677 Köln, Deutschland", result);
+            
+            result = LocationInfo.GetLocationInfo("Bonner, Str, 17, Cologne", translatorAccess);
+            Assert.AreEqual("Bonner Straße 17, 50677 Köln, Deutschland", result);
+
+            result = LocationInfo.GetLocationInfo("1 Queen's Road Central, Hongkong", translatorAccess);
+            Assert.AreEqual("Bonner Straße 17, 50677 Köln, Deutschland", result);
+           
         }
     }
 }
