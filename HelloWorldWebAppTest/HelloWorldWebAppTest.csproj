@@ -57,6 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TranslationRobot\TranslationRobot.csproj">
+      <Project>{acae807e-5b5f-438b-85c4-c5dbe981d683}</Project>
+      <Name>TranslationRobot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HelloWorldWebApp.csproj">
       <Project>{d2a4f667-38f0-4233-b282-2c79f225fca0}</Project>
       <Name>HelloWorldWebApp</Name>

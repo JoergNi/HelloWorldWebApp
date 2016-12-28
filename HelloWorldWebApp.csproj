@@ -155,15 +155,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\AddressInput.cs" />
-    <Compile Include="Controllers\AddressNotFoundException.cs" />
-    <Compile Include="Controllers\AzureAuthToken.cs" />
-    <Compile Include="Controllers\DataInput.cs" />
-    <Compile Include="Controllers\CountryInfo.cs" />
     <Compile Include="Controllers\DropdownHelper.cs" />
-    <Compile Include="Controllers\LocationInfo.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\TranslatorAccess.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -244,6 +237,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TranslationRobot\TranslationRobot.csproj">
+      <Project>{acae807e-5b5f-438b-85c4-c5dbe981d683}</Project>
+      <Name>TranslationRobot</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
