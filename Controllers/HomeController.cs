@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TranslationRobot;
+using TranslationRobot.Entity;
 
 namespace HelloWorldWebApp.Controllers
 {
@@ -54,9 +58,36 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Your application description page.\r\n";
+            CloudTable table = GetTable();
+            var query = table.CreateQuery<TranslatedAddressEntity>();
+            var queryResult = table.ExecuteQuery(query);
+            foreach (var item in queryResult)
+            {
+                ViewBag.Message += item.RowKey + " = " + item.Translation+"\r\n";
+            }
 
             return View();
+        }
+
+
+        public CloudTable GetTable()
+        {
+            // Retrieve the storage account from the connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                CloudConfigurationManager.GetSetting("StorageConnectionString"));
+
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            // Retrieve a reference to the table.
+            CloudTable table = tableClient.GetTableReference("AddressTranslation");
+
+            // Create the table if it doesn't exist.
+            table.CreateIfNotExists();
+
+            return table;
+
         }
 
         public ActionResult Result(DataInput dataInput)
