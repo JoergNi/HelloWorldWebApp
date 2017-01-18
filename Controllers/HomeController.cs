@@ -2,12 +2,13 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Mvc;
 using TranslationRobot;
-using TranslationRobot.Entity;
 
 namespace HelloWorldWebApp.Controllers
 {
@@ -81,7 +82,7 @@ namespace HelloWorldWebApp.Controllers
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             // Retrieve a reference to the table.
-            CloudTable table = tableClient.GetTableReference("AddressTranslation");
+            CloudTable table = tableClient.GetTableReference(TranslatedAddressEntity.TableName);
 
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
@@ -107,14 +108,11 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult LocalizeAddress(AddressInput addressInput)
         {
-            try
-            {
-                ViewBag.Message = LocationInfo.GetLocationInfo(addressInput.Address, TranslatorAccess);
-            }
-            catch (AddressNotFoundException addressNotFoundException)
-            {
-                ViewBag.Message = addressNotFoundException.Message;
-            }
+            string encodedAddress = HttpUtility.UrlEncode(addressInput.Address);
+            string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
+            string result = RequestHelper.DownloadString(uri);
+
+            ViewBag.Message = result;
           
             return View();
         }
