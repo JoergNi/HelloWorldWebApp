@@ -108,7 +108,7 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult LocalizeAddress(AddressInput addressInput)
         {
-            string encodedAddress = HttpUtility.UrlEncode(addressInput.Address);
+            string encodedAddress = System.Uri.EscapeUriString(addressInput.Address);
             string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
             string result = RequestHelper.DownloadString(uri);
 
