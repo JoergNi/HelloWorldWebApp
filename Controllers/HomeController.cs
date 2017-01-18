@@ -2,6 +2,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -63,12 +64,10 @@ namespace HelloWorldWebApp.Controllers
             CloudTable table = GetTable();
             var query = table.CreateQuery<TranslatedAddressEntity>();
             var queryResult = table.ExecuteQuery(query);
-            foreach (var item in queryResult)
-            {
-                ViewBag.Message += item.RowKey + " = " + item.Translation+"\r\n";
-            }
-
-            return View();
+            List<TranslatedAddressEntity> translatedAddressEntities = queryResult.ToList();
+          
+           
+            return View(translatedAddressEntities);
         }
 
 
