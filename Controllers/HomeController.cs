@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using TranslationRobot;
 
 namespace HelloWorldWebApp.Controllers
@@ -110,8 +112,9 @@ namespace HelloWorldWebApp.Controllers
             string encodedAddress = System.Uri.EscapeUriString(addressInput.Address);
             string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
             string result = RequestHelper.DownloadString(uri);
-
-            ViewBag.Message = result;
+            ViewBag.Error = result.Contains("Address could not be located");
+            ViewBag.Input = addressInput.Address;
+            ViewBag.Translation = result;
           
             return View();
         }
@@ -175,6 +178,28 @@ namespace HelloWorldWebApp.Controllers
             }
 
             return result.Split(new[] { ':' }).First();
+        }
+
+        public ActionResult ProvideTranslation(TranslationInput translationInput)
+        {
+            string result;
+            result = PostTranslation(translationInput, "http://webrole1.azurewebsites.net/api/AddTranslation");
+            ViewBag.Message = result;
+            return View();
+        }
+
+        internal static string PostTranslation(TranslationInput translationInput, string uri)
+        {
+            string result;
+            using (var client = new WebClient())
+            {
+                translationInput.EncodedTranslation = Encoding.UTF8.GetBytes(translationInput.Translation);
+                var dataString = JsonConvert.SerializeObject(translationInput);
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+                client.Headers.Add(HttpRequestHeader.ContentEncoding, "utf-16");
+                result = client.UploadString(new Uri(uri), "POST", dataString);
+            }
+            return result;
         }
     }
 }

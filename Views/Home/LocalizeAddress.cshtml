@@ -1,2 +1,23 @@
 ﻿
-<h3>@ViewBag.Message</h3>
+@if (ViewBag.Error)
+{
+    <h3>@ViewBag.Translation</h3>
+  
+}
+else
+{
+    <h3>@ViewBag.Input translates to @ViewBag.Translation</h3>
+}
+
+<h4>Provide a better translation:</h4>
+@using TranslationRobot
+@model TranslationRobot.TranslationInput
+
+@using (Html.BeginForm("ProvideTranslation", "Home", FormMethod.Post))
+{
+    @Html.TextBoxFor(t => t.Input, new { @Value = @ViewBag.Input })
+    @Html.TextBoxFor(t => t.Translation)
+
+    <input type="submit" value="Submit" />
+}
+
