@@ -196,7 +196,6 @@ namespace HelloWorldWebApp.Controllers
                 translationInput.EncodedTranslation = Encoding.UTF8.GetBytes(translationInput.Translation);
                 var dataString = JsonConvert.SerializeObject(translationInput);
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
-                client.Headers.Add(HttpRequestHeader.ContentEncoding, "utf-16");
                 result = client.UploadString(new Uri(uri), "POST", dataString);
             }
             return result;
