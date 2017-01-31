@@ -1,23 +1,106 @@
-﻿
-@if (ViewBag.Error)
+﻿@if (ViewBag.Error == null || ViewBag.Error)
 {
     <h3>@ViewBag.Translation</h3>
-  
 }
 else
 {
-    <h3>@ViewBag.Input translates to @ViewBag.Translation</h3>
+    <h3>@ViewBag.Input translates in the local language to </h3>
+    <h3>@ViewBag.PleaseTakeMeTo @ViewBag.Translation</h3>
 }
 
-<h4>Provide a better translation:</h4>
-@using TranslationRobot
-@model TranslationRobot.TranslationInput
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsjOHiXzwpXTZXQmz5TjfnA1PwN4TKkG0" type="text/javascript"></script>
+<script>
+    var Translation = @Html.Raw(Json.Encode(ViewBag.Translation));
+</script>
+<style>
+    #map_canvas img { max-width: none; }
+</style>
 
-@using (Html.BeginForm("ProvideTranslation", "Home", FormMethod.Post))
-{
-    @Html.TextBoxFor(t => t.Input, new { @Value = @ViewBag.Input })
-    @Html.TextBoxFor(t => t.Translation)
+<!-- This css is to give a nice big popup "info window" when a marker is clicked on the map -->
+<style>
+    .infoDiv {
+        -webkit-user-select: none;
+        background-color: white;
+        height: 200px;
+        width: 300px;
+    }
+</style>
+<br/>
+<!-- This is the div that will contain the Google Map -->
+<div id="map_canvas" style="height: 550px;"></div>
 
-    <input type="submit" value="Submit" />
+<!-- Enclose the Javascript in a "section" so that it is rendered in the correct order after scripts have been loaded etc -->
+@section scripts {
+    <section class="scripts">
+
+        <script type="text/javascript">
+
+
+            //This code tells the browser to execute the "Initialize" method only when the complete document model has been loaded. 
+            $(document).ready(function() {
+                Initialize();
+            });
+
+            // Where all the fun happens
+            function Initialize() {
+                codeAddress(Translation);
+
+
+            }
+
+            function displayMap(latitude, longitude) {
+
+                window.google.maps.visualRefresh = true;
+                var position = new window.google.maps.LatLng(latitude, longitude);
+
+                // These are options that set initial zoom level, where the map is centered globally to start, and the type of map to show
+                var mapOptions = {
+                    zoom: 16,
+                    center: position,
+                    mapTypeId: window.google.maps.MapTypeId.G_NORMAL_MAP
+                };
+
+                // This makes the div with id "map_canvas" a google map
+                var map = new window.google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+
+                var marker = new window.google.maps.Marker({
+                    'position': position,
+                    'map': map,
+                    'title': "here"
+                });
+
+                // Make the marker-pin blue!
+                marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+
+                // put in some information about each json object - in this case, the opening hours.
+                var infowindow = new window.google.maps.InfoWindow({
+                    content: "<div class='infoDiv'><h2>Target</div></div>"
+                });
+
+                // finally hook up an "OnClick" listener to the map so it pops up out info-window when the marker-pin is clicked!
+                window.google.maps.event.addListener(marker,
+                    'click',
+                    function() {
+                        infowindow.open(map, marker);
+                    });
+            }
+
+            function codeAddress(address) {
+                var geocoder = new window.google.maps.Geocoder();
+                geocoder.geocode({ address: address },
+                    function(results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            var latitude = results[0].geometry.location.lat();
+                            var longitude = results[0].geometry.location.lng();
+                            displayMap(latitude, longitude);
+                        } else {
+                            alert('Geocode was not successful for the following reason: ' + status);
+                        }
+                    });
+            }
+
+
+        </script>
+    </section>
 }
-

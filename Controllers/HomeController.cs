@@ -67,9 +67,9 @@ namespace HelloWorldWebApp.Controllers
             var query = table.CreateQuery<TranslatedAddressEntity>();
             var queryResult = table.ExecuteQuery(query);
             List<TranslatedAddressEntity> translatedAddressEntities = queryResult.ToList();
-          
-           
-            return View(translatedAddressEntities);
+
+            ViewBag.Addresses = translatedAddressEntities;
+            return View();
         }
 
 
@@ -109,13 +109,22 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult LocalizeAddress(AddressInput addressInput)
         {
-            string encodedAddress = System.Uri.EscapeUriString(addressInput.Address);
-            string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
-            string result = RequestHelper.DownloadString(uri);
-            ViewBag.Error = result.Contains("Address could not be located");
-            ViewBag.Input = addressInput.Address;
-            ViewBag.Translation = result;
-          
+            if (addressInput?.Address != null)
+            {
+                string encodedAddress = Uri.EscapeUriString(addressInput.Address);
+                string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
+                string result = RequestHelper.DownloadString(uri);
+                ViewBag.Error = result.Contains("Address could not be located");
+                ViewBag.Input = addressInput.Address;
+                ViewBag.Translation = result;
+            }
+            else
+            {
+                ViewBag.Error = true;
+                ViewBag.Translation = "Haan";
+            }
+
+
             return View();
         }
 

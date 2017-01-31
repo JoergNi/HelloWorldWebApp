@@ -15,7 +15,7 @@
             Translation
         </th>
     </tr>
-    @foreach (TranslatedAddressEntity item in Model)
+    @foreach (TranslatedAddressEntity item in ViewBag.Addresses)
     {
         <tr>
             <td >@item.RowKey</td>
@@ -23,3 +23,15 @@
         </tr>
     }
 </table>
+
+<h4>Provide a better translation:</h4>
+@using TranslationRobot
+@model TranslationRobot.TranslationInput
+
+@using (Html.BeginForm("ProvideTranslation", "Home", FormMethod.Post))
+{
+    @Html.TextBoxFor(t => t.Input, new { @Value = "" })
+    @Html.TextBoxFor(t => t.Translation)
+
+    <input type="submit" value="Submit" />
+}
