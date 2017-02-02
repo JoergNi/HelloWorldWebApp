@@ -21,8 +21,11 @@ namespace HelloWorldWebAppTest
         [TestMethod]
         public void TestAddTranslation()
         {
-            var translationInput = new TranslationInput() {Input = "Test", Translation = "广东省广州市" };
+            var translationInput = new TranslationInput() { Input = "Hatton", Translation = "Königsallee 21, Düsseldorf, Germany" };
             var postTranslation = HomeController.PostTranslation(translationInput, "http://localhost:24615/api/AddTranslation");
+            Assert.AreEqual("asd", postTranslation);
+            translationInput = new TranslationInput() {Input = "Test", Translation = "广东省广州市" };
+            postTranslation = HomeController.PostTranslation(translationInput, "http://localhost:24615/api/AddTranslation");
             Assert.AreEqual("asd",postTranslation);
         }
        

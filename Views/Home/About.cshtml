@@ -14,12 +14,16 @@
         <th>
             Translation
         </th>
+        <th>
+            Lattitude
+        </th>
     </tr>
     @foreach (TranslatedAddressEntity item in ViewBag.Addresses)
     {
         <tr>
             <td >@item.RowKey</td>
             <td >@item.Translation</td>
+            <td>@item.Lattitude</td>
         </tr>
     }
 </table>

@@ -1,34 +1,29 @@
-﻿@if (ViewBag.Error == null || ViewBag.Error)
+﻿<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsjOHiXzwpXTZXQmz5TjfnA1PwN4TKkG0" type="text/javascript"></script>
+@if (ViewBag.TranslatedAddressEntity != null)
 {
-    <h3>@ViewBag.Translation</h3>
+    <h3>Please take me to @ViewBag.Input translates in the local language to </h3>
+    <h3>@ViewBag.PleaseTakeMeTo @ViewBag.TranslatedAddressEntity.Translation</h3>
+    <script>
+        var Lattitude = @Html.Raw(Json.Encode(ViewBag.TranslatedAddressEntity.Lattitude));
+        var Longitude = @Html.Raw(Json.Encode(ViewBag.TranslatedAddressEntity.Longitude));
+    </script>
+    <style>
+        #map_canvas img { max-width: none; }
+    </style>
+
+    <!-- This css is to give a nice big popup "info window" when a marker is clicked on the map -->
+    <style>
+        .infoDiv {
+            -webkit-user-select: none;
+            background-color: white;
+            height: 200px;
+            width: 300px;
+        }
+    </style>
+    <br/>
+    <!-- This is the div that will contain the Google Map -->
+    <div id="map_canvas" style="height: 550px;"></div>
 }
-else
-{
-    <h3>@ViewBag.Input translates in the local language to </h3>
-    <h3>@ViewBag.PleaseTakeMeTo @ViewBag.Translation</h3>
-}
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsjOHiXzwpXTZXQmz5TjfnA1PwN4TKkG0" type="text/javascript"></script>
-<script>
-    var Translation = @Html.Raw(Json.Encode(ViewBag.Translation));
-</script>
-<style>
-    #map_canvas img { max-width: none; }
-</style>
-
-<!-- This css is to give a nice big popup "info window" when a marker is clicked on the map -->
-<style>
-    .infoDiv {
-        -webkit-user-select: none;
-        background-color: white;
-        height: 200px;
-        width: 300px;
-    }
-</style>
-<br/>
-<!-- This is the div that will contain the Google Map -->
-<div id="map_canvas" style="height: 550px;"></div>
-
 <!-- Enclose the Javascript in a "section" so that it is rendered in the correct order after scripts have been loaded etc -->
 @section scripts {
     <section class="scripts">
@@ -43,7 +38,7 @@ else
 
             // Where all the fun happens
             function Initialize() {
-                codeAddress(Translation);
+                displayMap(Lattitude,Longitude);
 
 
             }
@@ -86,19 +81,7 @@ else
                     });
             }
 
-            function codeAddress(address) {
-                var geocoder = new window.google.maps.Geocoder();
-                geocoder.geocode({ address: address },
-                    function(results, status) {
-                        if (status == google.maps.GeocoderStatus.OK) {
-                            var latitude = results[0].geometry.location.lat();
-                            var longitude = results[0].geometry.location.lng();
-                            displayMap(latitude, longitude);
-                        } else {
-                            alert('Geocode was not successful for the following reason: ' + status);
-                        }
-                    });
-            }
+           
 
 
         </script>

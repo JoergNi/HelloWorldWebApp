@@ -1,15 +1,11 @@
-﻿using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using TranslationRobot;
 
@@ -17,13 +13,12 @@ namespace HelloWorldWebApp.Controllers
 {
     public class HomeController : Controller
     {
-
         private TranslatorAccess TranslatorAccess
         {
             get
             {
                 TranslatorAccess result;
-                HttpContext context = System.Web.HttpContext.Current;
+                var context = System.Web.HttpContext.Current;
                 if (context.Application.Contents["TranslatorAccess"] != null)
                 {
                     result = context.Application.Contents["TranslatorAccess"] as TranslatorAccess;
@@ -31,7 +26,7 @@ namespace HelloWorldWebApp.Controllers
                 else
                 {
                     result = new TranslatorAccess();
-                    context.Application.Contents["TranslatorAccess"] = result; 
+                    context.Application.Contents["TranslatorAccess"] = result;
                 }
                 return result;
             }
@@ -40,20 +35,19 @@ namespace HelloWorldWebApp.Controllers
         public ActionResult Index()
         {
             var locationInfo = GetLocationInfo();
-           
+
             ViewBag.Message = "Hello to " + locationInfo.GetCountryName() + "\r\n";
             try
             {
-                string countryCode = locationInfo.GetCountryCode();
-                string languageCode = TranslatorAccess.GetLanguageCode(countryCode);
-                string personalized = TranslatorAccess.Translate("Welcome to our Website", languageCode);
+                var countryCode = locationInfo.GetCountryCode();
+                var languageCode = TranslatorAccess.GetLanguageCode(countryCode);
+                var personalized = TranslatorAccess.Translate("Welcome to our Website", languageCode);
                 ViewBag.SubMessage += personalized;
             }
             catch (Exception e)
             {
                 ViewBag.SubMessage += e.Message;
             }
-
 
 
             ;
@@ -63,10 +57,10 @@ namespace HelloWorldWebApp.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.\r\n";
-            CloudTable table = GetTable();
+            var table = GetTable();
             var query = table.CreateQuery<TranslatedAddressEntity>();
             var queryResult = table.ExecuteQuery(query);
-            List<TranslatedAddressEntity> translatedAddressEntities = queryResult.ToList();
+            var translatedAddressEntities = queryResult.ToList();
 
             ViewBag.Addresses = translatedAddressEntities;
             return View();
@@ -76,32 +70,31 @@ namespace HelloWorldWebApp.Controllers
         public CloudTable GetTable()
         {
             // Retrieve the storage account from the connection string.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+            var storageAccount = CloudStorageAccount.Parse(
                 CloudConfigurationManager.GetSetting("StorageConnectionString"));
 
             // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            var tableClient = storageAccount.CreateCloudTableClient();
 
             // Retrieve a reference to the table.
-            CloudTable table = tableClient.GetTableReference(TranslatedAddressEntity.TableName);
+            var table = tableClient.GetTableReference(TranslatedAddressEntity.TableName);
 
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
 
             return table;
-
         }
 
         public ActionResult Result(DataInput dataInput)
         {
-            string countryCode = dataInput.SelectedCountry;
+            var countryCode = dataInput.SelectedCountry;
             if (string.IsNullOrWhiteSpace(dataInput.SelectedCountry))
             {
                 var locationInfo = GetLocationInfo();
                 countryCode = locationInfo.GetCountryCode();
             }
 
-            string languageCode = TranslatorAccess.GetLanguageCode(countryCode);
+            var languageCode = TranslatorAccess.GetLanguageCode(countryCode);
 
             ViewBag.Message = TranslatorAccess.Translate(dataInput.Text, languageCode);
             return View();
@@ -111,12 +104,15 @@ namespace HelloWorldWebApp.Controllers
         {
             if (addressInput?.Address != null)
             {
-                string encodedAddress = Uri.EscapeUriString(addressInput.Address);
-                string uri = string.Format("http://webrole1.azurewebsites.net/api/Translate/" + encodedAddress);
-                string result = RequestHelper.DownloadString(uri);
+                var encodedAddress = Uri.EscapeUriString(addressInput.Address);
+                var uri = string.Format("http://webrole1.azurewebsites.net/api/TranslateDetails/" + encodedAddress);
+                var result = RequestHelper.DownloadString(uri);
+                var translatedAddressEntity = JsonConvert.DeserializeObject<TranslatedAddressEntity>(result);
+                if (translatedAddressEntity.CountryCode != null)
+                    ViewBag.PleaseTakeMeTo = TranslatorAccess.TranslateByCountryCode("Please take me to",
+                        translatedAddressEntity.CountryCode);
                 ViewBag.Error = result.Contains("Address could not be located");
-                ViewBag.Input = addressInput.Address;
-                ViewBag.Translation = result;
+                ViewBag.TranslatedAddressEntity = translatedAddressEntity;
             }
             else
             {
@@ -130,8 +126,7 @@ namespace HelloWorldWebApp.Controllers
 
         public ActionResult Test()
         {
-
-            string message = "Robots are smart. ";
+            var message = "Robots are smart. ";
             ViewBag.Message = TranslatorAccess.TranslateByCountryCode(message, "de");
             ViewBag.Message += TranslatorAccess.TranslateByCountryCode(message, "hk");
             ViewBag.Message += TranslatorAccess.TranslateByCountryCode(message, "us");
@@ -140,8 +135,6 @@ namespace HelloWorldWebApp.Controllers
             ViewBag.Message += TranslatorAccess.TranslateByCountryCode(message, "cn");
             ViewBag.Message += TranslatorAccess.TranslateByCountryCode(message, "br");
             ViewBag.Message += TranslatorAccess.TranslateByCountryCode(message, "th");
-
-
 
 
             return View();
@@ -157,36 +150,30 @@ namespace HelloWorldWebApp.Controllers
 
         private LocationInfo GetLocationInfo()
         {
-
             var ip = GetIPAddress();
             if (string.IsNullOrEmpty(ip))
-            {
                 ip = "87.176.166.69";
-            }
             var locationInfo = new LocationInfo(ip);
             return locationInfo;
-
         }
 
         protected string GetIPAddress()
         {
-            System.Web.HttpContext context = System.Web.HttpContext.Current;
-            string ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            var context = System.Web.HttpContext.Current;
+            var ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
             var result = "";
             if (!string.IsNullOrEmpty(ipAddress))
             {
-                string[] addresses = ipAddress.Split(',');
+                var addresses = ipAddress.Split(',');
                 if (addresses.Length != 0)
-                {
                     result = addresses[0];
-                }
             }
             else
             {
                 result = context.Request.ServerVariables["REMOTE_ADDR"];
             }
 
-            return result.Split(new[] { ':' }).First();
+            return result.Split(':').First();
         }
 
         public ActionResult ProvideTranslation(TranslationInput translationInput)
